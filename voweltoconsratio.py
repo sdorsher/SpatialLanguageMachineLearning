@@ -154,7 +154,7 @@ ydat=USAarr[::-1]
 
 
 fig=plt.subplots()
-plot1=plt.plot(xdat, norm.pdf(xdat,0,400),color='g',label='Cauchy distribution')
+plot1=plt.plot(xdat, cauchy.pdf(xdat,0,400),color='g',label='Cauchy distribution')
 plot2=plt.plot(xdat,ydat,color='b',label='data')
 plt.xlabel("Airports")
 plt.ylabel("Verb to Consonant ratio in airport name")

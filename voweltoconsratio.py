@@ -19,7 +19,7 @@ def VowelToConsRatio(name):
     consonents = words - vowels
     #put a one at the end to account for one airport in number totaled. will be normalized later
 
-    return vowels/consonents
+    return float(vowels)/float(consonents)
 
 def MergeCount(totalCount, thisCount):
     totalCount2=totalCount+thisCount
@@ -81,54 +81,39 @@ for line in file:
         Canadaratio.append(thisCanadaratio)
         
                 
+Canadaarr=np.asarray(Canadaratio)
+Canadaarr.sort()
+USAarr=np.asarray(USAratio)
+USAarr.sort()
+UKarr=np.asarray(Englandratio)
+UKarr.sort()
 
 
-
-
-fig, ax = plt.subplots()
-n_groups=len(Canadaratio)
-index=np.arange(n_groups)
-bar_width=0.9
-opacity = 0.8
-rects2 = plt.bar(index, np.asarray(Canadaratio), bar_width, alpha=opacity, color='g', label='Vowels/Consonants ratio')
-
-
-
-plt.xlabel('Airports in Canada')
-plt.ylabel('Ratio of letters in Airport names in Canada')
-plt.legend()
-
-plt.tight_layout()
-plt.show()
 
 fig, ax = plt.subplots()
 n_groups=len(USAratio)
 index=np.arange(n_groups)
 bar_width=0.9
 opacity = 0.8
-rects2 = plt.bar(index, np.asarray(USAratio), bar_width, alpha=opacity, color='g', label='Vowels/Consonants ratio')
+rects1 = plt.bar(index, USAarr[::-1], bar_width, alpha=opacity, color='b', label='USA')
 
 
 plt.xlabel('Airports in the USA')
 plt.ylabel('Letter ratio in Airport names in the USA')
-plt.legend()
+plt.title('Vowels/Consonants ratio, sorted')
 
 plt.tight_layout()
 plt.show()
+
+
+
+
 fig, ax = plt.subplots()
-n_groups=len(Englandratio)
-index=np.arange(n_groups)
-bar_width=0.9
-opacity = 0.8
-rects2 = plt.bar(index, np.asarray(Englandratio), bar_width, alpha=opacity, color='g', label='Vowels/Consonants ratio')
-
-
-
-plt.xlabel('Airports in the UK')
-plt.ylabel('Letter ratio in Airport names in the UK')
+plt.xlabel('Airports in the USA')
+plt.ylabel('Letter ratio in Airport names')
+plt.title('Vowels/Consonants ratio, sorted')
+points1 = plt.plot(USAarr[::-1],color='b', label='USA')
+points2 = plt.plot(Canadaarr[::-1],color='g', label='Canada')
+points3 = plt.plot(UKarr[::-1],color='r', label='UK')
 plt.legend()
-
-plt.tight_layout()
 plt.show()
-
-

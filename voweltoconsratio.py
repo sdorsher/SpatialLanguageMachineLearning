@@ -1,8 +1,9 @@
 #!/usr/bin/python
 import os, sys
 
-
-
+from scipy.stats import norm
+from scipy.optimize import curve_fit
+from scipy.stats import cauchy
 import numpy as np
 from io import StringIO
 import re
@@ -77,18 +78,18 @@ for line in file:
         thisEnglandratio = VowelToConsRatio(line[1])
         Englandratio.append(thisEnglandratio)
     
-#    if line[3] == "\"France\"":
-#        thisFranceratio = VowelToConsRatio(line[1])
-#        Franceratio.append(thisFranceratio)
+    if line[3] == "\"France\"":
+        thisFranceratio = VowelToConsRatio(line[1])
+        Franceratio.append(thisFranceratio)
     
     
-#    if line[3] == "\"Germany\"":#
-#        thisGermanyratio = VowelToConsRatio(line[1])
-#        Germanyratio.append(thisGermanyratio)
+    if line[3] == "\"Germany\"":#
+        thisGermanyratio = VowelToConsRatio(line[1])
+        Germanyratio.append(thisGermanyratio)
     
-#    if line[3] == "\"Mexico\"" :
-#        thisMexicoratio = VowelToConsRatio(line[1])
-#        Mexicoratio.append(thisMexicoratio)
+    if line[3] == "\"Mexico\"" :
+        thisMexicoratio = VowelToConsRatio(line[1])
+        Mexicoratio.append(thisMexicoratio)
     if line[3] == "\"Canada\"" :
         thisCanadaratio = VowelToConsRatio(line[1])
         Canadaratio.append(thisCanadaratio)
@@ -100,6 +101,12 @@ USAarr=np.asarray(USAratio)
 USAarr.sort()
 UKarr=np.asarray(Englandratio)
 UKarr.sort()
+Francearr=np.asarray(Franceratio)
+Francearr.sort()
+Germanyarr=np.asarray(Germanyratio)
+Germanyarr.sort()
+Mexicoarr=np.asarray(Mexicoratio)
+Mexicoarr.sort()
 
 
 
@@ -128,5 +135,28 @@ plt.title('Vowels/Consonants ratio, sorted')
 points1 = plt.plot(USAarr[::-1],color='b', label='USA')
 points2 = plt.plot(Canadaarr[::-1],color='g', label='Canada')
 points3 = plt.plot(UKarr[::-1],color='r', label='UK')
+points4 = plt.plot(Francearr[::-1],color='c', label='France')
+points5 = plt.plot(Germanyarr[::-1],color='m', label='Germany')
+points6 = plt.plot(Mexicoarr[::-1],color='y', label='Mexico')
 plt.legend()
+plt.show()
+
+#falls off continuously until there is one. 
+#this looks like a breit-wigner distribution
+#also known as cauchy or lorentz distribution
+#try doing a fit of the cauchy distribution with an x intercept of zero to the usa data
+#try my first thought, that I got sidetracked from by a paper I saw today. log(gaussian)
+
+
+xdat=np.arange(len(USAarr))
+ydat=USAarr[::-1]
+
+
+
+fig=plt.subplots()
+plot1=plt.plot(xdat, norm.pdf(xdat,0,400),color='g',label='Cauchy distribution')
+plot2=plt.plot(xdat,ydat,color='b',label='data')
+plt.xlabel("Airports")
+plt.ylabel("Verb to Consonant ratio in airport name")
+plt.title("USA data")
 plt.show()

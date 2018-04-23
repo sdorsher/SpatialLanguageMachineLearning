@@ -17,9 +17,22 @@ def VowelToConsRatio(name):
     others = len(name) - words - spaces
     vowels = sum(map(name.lower().count, "aeiou"))
     consonents = words - vowels
-    #put a one at the end to account for one airport in number totaled. will be normalized later
+
 
     return float(vowels)/float(consonents)
+
+
+def AirportNameLetterFrequency(name):
+    
+    words = sum(c.isalpha() for c in name)
+    spaces = sum(c.isspace() for c in name)
+    others = len(name) - words - spaces
+    vowels = sum(map(name.lower().count, "aeiou"))
+    consonents = words - vowels
+    #put a one at the end to account for one airport in number totaled. will be normalized later
+
+    return [consonents, vowels, spaces, others, 1]
+
 
 def MergeCount(totalCount, thisCount):
     totalCount2=totalCount+thisCount

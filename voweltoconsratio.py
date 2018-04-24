@@ -11,6 +11,10 @@ import matplotlib.pyplot as plt
 
 file = open("airports.dat.txt","r")
 
+
+def f3(x,a,b,c,d):
+    return a*x**3+b*x**2+c*x+d
+
 def VowelToConsRatio(name):
     
     words = sum(c.isalpha() for c in name)
@@ -146,17 +150,22 @@ plt.show()
 #also known as cauchy or lorentz distribution
 #try doing a fit of the cauchy distribution with an x intercept of zero to the usa data
 #try my first thought, that I got sidetracked from by a paper I saw today. log(gaussian)
-
+#better yet try a third order polynomial
 
 xdat=np.arange(len(USAarr))
 ydat=USAarr[::-1]
-
+par=[1.,1.,1.,1.]
+p0=par
+par,pvar=curve_fit(f3,xdat,ydat)
 
 
 fig=plt.subplots()
-plot1=plt.plot(xdat, cauchy.pdf(xdat,0,400),color='g',label='Cauchy distribution')
 plot2=plt.plot(xdat,ydat,color='b',label='data')
+plot1=plt.plot(xdat, f3(xdat, par[0], par[1], par[2], par[3]),color='r',label='Third order polynomial')
 plt.xlabel("Airports")
 plt.ylabel("Verb to Consonant ratio in airport name")
 plt.title("USA data")
+plt.legend()
 plt.show()
+
+#fits third order polynomial perfectly

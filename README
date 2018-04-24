@@ -1,3 +1,5 @@
+https://www.python.org/dev/peps/pep-0263/#defining-the-encoding
+
 For data science incubator:
 Airports data available from https://openflights.org/data.html
 Use vowels and consonants in airport names to train longitude attitude ranges associated with countries

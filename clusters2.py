@@ -121,7 +121,7 @@ print alldatarray[1:3]
 scaler = StandardScaler()
 scaler.fit(alldatarray)
 StandardScaler(copy=True, with_mean=True, with_std=True)
-trainingdat=scaler.transform(alldatarray)
+trainingdata=scaler.transform(alldatarray)
 
 km=KMeans(n_clusters=7,init='random',n_init=10,max_iter=300,tol=1e-04,random_state=0)
 y_km=km.fit_predict(trainingdata)

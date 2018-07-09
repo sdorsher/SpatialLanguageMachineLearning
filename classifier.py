@@ -12,9 +12,9 @@ from scipy.stats import cauchy
 import numpy as np
 from io import StringIO
 import re
+from sklearn.model_selection import train_test_split
 
-
-file = open("airports.dat.txt","r")
+file = open("airports-extended.dat.txt","r")
 
 def powerlaw(x,a,b,c):
     return a*x**b+c
@@ -54,24 +54,26 @@ def MergeCount(totalCount, thisCount):
     totalCount2=totalCount+thisCount
     return totalCount2
 
-#def CounttoHistograms(thisUSAcount, totalUSAcount, totalEnglandcount, totalTurkeycount, totalFrancecount, totalGermanycount, totalMexicocount, totalCanadacount)
 
 
-
-
-totalUSAcount=np.zeros(5)
-totalChinacount=np.zeros(5)
-totalEnglandcount=np.zeros(5)
-totalFrancecount=np.zeros(5)
-totalGermanycount=np.zeros(5)
-totalMexicocount=np.zeros(5)
-totalCanadacount=np.zeros(5)
-
-
-
-#I picked some countries I have familiarity with so I know whether or not the data makes sense when I see it, sort of.
-
-#what I want is the histogram of counts within each country to compare distributions between countries by eye. I can then look at a regression within the US by longitude and lattitude (actual distance from Chicago?) if it looks interesting
+def LatLongClassMaker(coor):
+    lat,long=coor
+    if lat<30:
+        if long<90:
+            return 1 #florida
+        elif long > 120:
+            return 2 #texas
+        else:
+            return 3 #hawaii
+    elif lat >50:
+        return 4 #alaska
+    elif long>80:
+        return (50-lat)/20*5*(125-long)/45*9+7
+    elif long<80 and lat < 40:
+        return 5 #south east
+    elif long>80 and lat > 40:
+        return 6 #new england
+    #worst mapping ever-- ignores new england and city diversity
 
 ratio=[]
 coords=[]
@@ -80,102 +82,57 @@ coords=[]
 for line in file:
     line=re.split(',',line);
 
-    if line[3] == "\"China\"":
-        thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
-        ratio.append([thisratioV,thisratioS,thisratioO])
-        coords.append([float(line[6]),float(line[7])])
     if line[3] == "\"United States\"":
         thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
         ratio.append([thisratioV,thisratioS,thisratioO])
         coords.append([float(line[6]),float(line[7])])
-    if line[3] == "\"United Kingdom\"":
-        thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
-        ratio.append([thisratioV,thisratioS,thisratioO])
-        coords.append([float(line[6]),float(line[7])])
-    if line[3] == "\"France\"":
-        thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
-        ratio.append([thisratioV,thisratioS,thisratioO])
-        coords.append([float(line[6]),float(line[7])])
-    
-    if line[3] == "\"Germany\"":#
-        thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
-        ratio.append([thisratioV,thisratioS,thisratioO])
-        coords.append([float(line[6]),float(line[7])])
-    if line[3] == "\"Mexico\"" :
-        thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
-        ratio.append([thisratioV,thisratioS,thisratioO])
-        coords.append([float(line[6]),float(line[7])])
-    if line[3] == "\"Canada\"" :
-        thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
-        ratio.append([thisratioV,thisratioS,thisratioO])
-        coords.append([float(line[6]),float(line[7])])
 
-ratioarray=np.asarray(ratio)
-coordsarray=np.asarray(coords)
-        
-print ratioarray[1:3]
-print coords[1:3]
+
+ratioarray=np.empty([len(ratio),3])
+coordsarray=np.empty([len(coords),2])
+
+for i, rat in enumerate(ratio):
+    ratioarray[i,:]=rat
+for i,coor in enumerate(coords):
+    coordsarray[i,:]=LatLongClassMaker(coor)
+
+print(len(ratioarray))
+print(len(coordsarray))        
+print(ratioarray[1:3])
+print(coordsarray[1:3])
+
+
+xtrain,xtest,ytrain,ytest=train_test_split(ratioarray,coordsarray,test_size=0.33,shuffle=True, random_state=42)
 
 scaler = StandardScaler()
-scaler.fit(ratio)
-StandardScaler(copy=True, with_mean=True, with_std=True)
-
-trainingdat=scaler.transform(ratioarray)
+xtrain2=scaler.fit_transform(xtrain)
 
 
 
-clf = SGDClassifier(loss='modified_huber', penalty='l2')
-clf.fit(trainingdat,coords)
+
+
+#clf = SGDClassifier(loss='modified_huber', penalty='l2')
+#clf.fit(trainingdat,coords)
 #modified_huber loss function (counting values between 0 and 1  to continuous values), using l2 (RSS) error for distance measure. note that this does not make use of power law scaling
 
-SGDClassifier(alpha=0.0001, average=False, class_weight=None, epsilon=0.1,
-       eta0=0.0, fit_intercept=True, l1_ratio=0.15,
-       learning_rate='optimal', loss='hinge', max_iter=None, n_iter=None,
-       n_jobs=1, penalty='l2', power_t=0.5, random_state=None,
-       shuffle=True, tol=None, verbose=0, warm_start=False
+clf=OneVersusRestClassifier(random_state=None,shuffle=True, tol=1.e-2)
 
-classlabels=clf.predict(trainingdata)
-distance=clf.decision_function(trainingdata)
-print len(z)
-print trainingdat.shape
-print coords.shape
+clf.fit(xtrain2,ytrain)
+predictions=clf.predict(xtrain2)
+distance=clf.decision_function(xtrain2)
 
-#testphraseV,testphraseS,testphraseO=VowelToConsCount("Hello World!")
-#testloc=clf.predict([[testphraseV,testphraseS,testphraseO]])
-#print testloc
-
+accuracy=accuracy_score(ytest,prediction)
+print(accuracy)
 
 fig=plt.figure()
 ax=fig.gca()
 
 
-ax.scatter(trainingdata[:,1],trainingdata[:,0],c=classlabels,cmap=cm.plasma_r)
+ax.scatter(xtrain2[:,1],xtrain2[:,0],c=predictions,cmap=cm.plasma_r)
 
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
-plt.title('Map of classes in language space for seven countries')
+plt.title('Map of language classes for US using extended training set')
 plt.show()
 
 
-
-fig=plt.figure()
-ax=fig.gca()
-
-ax.scatter(coords[:,1],coords[:,0],c=classlabels,cmap=cm.plasma_r)
-
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.title('World map of language classes for seven countries')
-plt.show()
-
-
-fig=plt.figure()
-ax=fig.gca()
-
-
-ax.scatter(coords[:,1],coords[:,0],c=distance,cmap=cm.plasma_r)
-
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.title('World map of distances from the centers of language classes')
-plt.show()

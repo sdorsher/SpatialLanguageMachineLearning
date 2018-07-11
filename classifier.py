@@ -134,7 +134,7 @@ xphrases2=scaler.fit_transform(xphrases)
 #    ytestmatrix[i,int(ytest)]=1
 
 
-kpca=KernelPCA(n_components=9, random_state=36, kernel="poly", degree=3, tol=1e-3, max_iter=None, remove_zero_eig=False, fit_inverse_transform=True)
+kpca=KernelPCA(n_components=3, random_state=42, kernel="poly", degree=3, tol=1e-3, max_iter=None, remove_zero_eig=False, fit_inverse_transform=True)
 X_kpca_train=kpca.fit_transform(xtrain2)
 X_kpca_test=kpca.fit_transform(xtest2)
 X_kpca_phrases=kpca.fit_transform(xphrases2)
@@ -142,14 +142,6 @@ X_kpca_phrases=kpca.fit_transform(xphrases2)
 print(xtrain2[0])
 print(X_kpca_train[0])
 
-plt.figure()
-plt.title("Kernel PCA, third order poly, 12 components")
-plt.scatter(X_kpca_train[:,0],X_kpca_train[:,1],color='red', label="Component  0 vs 1")
-plt.scatter(X_kpca_train[:,3],X_kpca_train[:,2],color='blue', label="Component 0 vs 3")
-plt.scatter(X_kpca_train[:,6],X_kpca_train[:,3],color='green', label="Component 0 vs 6")
-
-plt.legend(loc='lower right')
-plt.show()
 
 print(np.shape(X_kpca_train))
 print(np.shape(ytrain))
@@ -162,21 +154,28 @@ latparams=lr3to2_lat.get_params()
 longparams=lr3to2_long.get_params()
 latprediction=lr3to2_lat.predict(X_kpca_train)
 longprediction=lr3to2_long.predict(X_kpca_train)
-phraselatpred=lr3to2_lat.predict(X_kpca_train)
-phraselongpred=lr3to2_long.predict(X_kpca_train)
+phraselatpred=lr3to2_lat.predict(X_kpca_phrases)
+phraselongpred=lr3to2_long.predict(X_kpca_phrases)
+
+print(testphrases)
+print(phraselatpred)
+print(phraselongpred)
+print(ytrain[:,0].mean(), ytrain[:,1].mean())
 
 plt.figure()
 plt.title("Verification data for latitudes and longitudes in the US")
 plt.xlabel("Longitude")
 plt.ylabel("Latitude")
-plt.scatter(longprediction,latprediction,c='b')
-plt.scatter(phraselongpred[0],phraselatpred[1],c='r',label=testphrases[0])
+plt.scatter(longprediction,latprediction,c='r')
+plt.scatter(phraselongpred[0],phraselatpred[1],c='b',label=testphrases[0])
 plt.scatter(phraselongpred[1],phraselatpred[1],c='m',label=testphrases[1])
 plt.scatter(phraselongpred[2],phraselatpred[1],c='c',label=testphrases[2])
 plt.scatter(phraselongpred[3],phraselatpred[1],c='g',label=testphrases[3])
 plt.scatter(phraselongpred[4],phraselatpred[1],c='y',label=testphrases[4])
 plt.legend(loc="lower right")
 plt.show()
+
+
 
 #clf=OneVsRestClassifier(MultinomialNB())
 #clf=MLPClassifier(hidden_layer_sizes=(hidden_layer_sizes=(100, ), activation=’relu’, solver=’adam’, alpha=0.0001, batch_size=’auto’, learning_rate=’constant’, learning_rate_init=0.001, power_t=0.5, max_iter=200, shuffle=True, random_state=None, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
@@ -198,5 +197,6 @@ plt.show()
 #plt.ylabel('Latitude')
 #plt.title('Map of language classes for US using extended training set')
 #plt.show()
+
 
 

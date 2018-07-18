@@ -8,9 +8,10 @@ import numpy as np
 from io import StringIO
 import re
 from sklearn.decomposition import KernelPCA
+from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
-
+from sklearn.model_selection import train_test_split
 file = open("airports-extended.dat.txt","r")
 
 
@@ -108,80 +109,38 @@ for phrase in colleaguephrases:
 print(xphrases)
 
 
-
+xtrain,xtest,ytrain,ytest=train_test_split(ratioarray,coordsarray,test_size=0.33,shuffle=False, random_state=False)
 
 scaler = StandardScaler()
-xairportlanguages=scaler.fit_transform(ratioarray)
+xtrain2=scaler.fit_transform(xtrain)
+xtest2=scaler.fit_transform(xtest)
 xphrases2=scaler.fit_transform(xphrases)
 xcolleague2=scaler.fit_transform(xcolleague)
 
-kpca=KernelPCA(n_components=12, random_state=False, kernel="poly", degree=3, tol=1e-3, max_iter=None, remove_zero_eig=False, fit_inverse_transform=True)
-X_kpca_phrases=kpca.fit_transform(xphrases2)
-X_kpca_airportlanguage=kpca.fit_transform(xairportlanguages)
-#X_kpca_colleague=kpca.fit_transform(xcolleague2)
-
-print(X_kpca_phrases[0])
-print(X_kpca_airportlanguage[0])
-#print(X_kpca_colleague[0])
 
 
-lr3to2=LinearRegression()
-lr3to2.fit(X_kpca_airportlanguage,coords)
+clflatitude=SVR(C=3.0, coef0=0.0, degree=3, kernel='poly', max_iter=-1, shrinking=False, tol=0.001, verbose=True)
+print(np.shape(xtrain2))
+print(np.shape(ytrain))
+clflatitude.fit(xtrain2, ytrain[:,0])
+predlatitude=clflatitude.predict(xtrain2)
+clflongitude=SVR(C=1.0, epsilon=0.2, coef0=0.0, degree=3, kernel='poly', max_iter=-1, shrinking=False, tol=0.001, verbose=True)
+clflongitude.fit(xtrain2, ytrain[:,1])
+predlongitude=clflatitude.predict(xtrain2)
+#print(clflatitude.score(xtrain2,ytrain))
+#print(clflongitude.score(xtrain2,ytrain))
+#print(clflatitude.score(xtest2,predlatitude))
+#print(clflongitude.score(xtest2,predlongitude))
 
-
-
-latlongprediction=lr3to2.predict(X_kpca_airportlanguage)
-#longprediction=lr3to2_long.predict(X_kpca_airportlanguage)
-#phrasepred=lr3to2.predict(X_kpca_phrases)
-#phraselongpred=lr3to2_long.predict(X_kpca_phrases)
-#phrasecolleague=lr3to2_lat.predict(X_kpca_colleague)
-#phraselongcolleague=lr3to2_long.predict(X_kpca_colleague)
-
-
-print(np.shape(X_kpca_airportlanguage))
-print(np.shape(coords))
-#lat_v=LinearRegression()
-#long_v=LinearRegression()
-#lat_s=LinearRegression()
-#long_s=LinearRegression()
-#lat_o=LinearRegression()
-#long_o=LinearRegression
-#lat_v.fit(X_kpca_airportlanguage[:,0],coords[:,0])
-#long_v.fit(X_kpca_airportlanguage[:,0],coords[:,1])
-#lat_s.fit(X_kpca_airportlanguage[:,1],coords[:,0])
-#long_s.fit(X_kpca_airportlanguage[:,1],coords[:,1])
-#lat_o.fit(X_kpca_airportlanguage[:,2],coords[:,0])
-#long_o.fit(X_kpca_airportlanguage[:,2],coords[:,1])
-
-
-
-#vlatpred=lat_s.predict(X_kpcaairportlanguage[:,0])
-#slatpred=lat_s.predict(X_kpcaairportlanguage[:,1])
-#olatpred=lat_s.predict(X_kpcaairportlanguage[:,2])
-#vlongpred=long_s.predict(X_kpcaairportlanguage[:,0])
-#slongpred=long_s.predict(X_kpcaairportlanguage[:,1])
-#olongpred=long_s.predict(X_kpcaairportlanguage[:,2])
-#longprediction=np.avg(slongpred,olongpred,vlongpred)
-#latprediction=np.avg(slatpred,olatpred,vlatpred)
-#phraselatpred=lr3to2_lat.predict(X_kpca_phrases)
-#phraselongpred=lr3to2_long.predict(X_kpca_phrases)
-#phraselatcolleague=lr3to2_lat.predict(X_kpca_colleague)
-#phraselongcolleague=lr3to2_long.predict(X_kpca_colleague)
-
-
-#print(testphrases)
-#print(phraselatpred)
-#print(phraselongpred)
-#print(ytrain[:,0].mean(), coords[:,1].mean())
-#print(longprediction, latprediction)
-
+print(np.shape(predlongitude))
+print(np.shape(predlatitude))
 
 plt.figure()
-plt.title("Verification data for latitudes and longitudes in the US")
+plt.title("Support Vector Regressor approach, US data")
 plt.xlabel("Longitude")
 plt.ylabel("Latitude")
-plt.scatter(coords[:,1], coords[:,0], c='c', label="Original data set")
-plt.scatter(longprediction,latprediction,c='r', label="Whole data set, as mapped")
+plt.scatter(ytrain[:,1], ytrain[:,0], c='c', label="Training data set")
+plt.scatter(predlongitude,predlatitude,c='r', label="Verification data, as mapped")
 #plt.scatter(phraselongpred,phraselatpred,c='b',label="My test phrases, I live in Minnesota right now")
 #plt.scatter(phraselongcolleague, phraselatcolleague, c='y', label="Colleagues test phrases, he lives in Louisiana right now")
 #plt.scatter(phraselongpred[0],phraselatpred[1],c='b',label=testphrases[0])
@@ -201,26 +160,7 @@ plt.show()
 
 
 
-#clf=OneVsRestClassifier(MultinomialNB())
-#clf=MLPClassifier(hidden_layer_sizes=(hidden_layer_sizes=(100, ), activation=’relu’, solver=’adam’, alpha=0.0001, batch_size=’auto’, learning_rate=’constant’, learning_rate_init=0.001, power_t=0.5, max_iter=200, shuffle=True, random_state=None, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
-#clf.fit(xtrain2,ytrain)
-#predictions=clf.predict(xtrain2)
-#distance=clf.decision_function(xtrain2)
-
-#accuracy=accuracy_score(ytest,prediction)
-#print(accuracy)
-
-#fig=plt.figure()
-#ax=fig.gca()
-
-
-#ax.scatter(xtrain2[:,1],xtrain2[:,0],c=predictions,cmap=cm.plasma_r)
-
-#plt.xlabel('Longitude')
-#plt.ylabel('Latitude')
-#plt.title('Map of language classes for US using extended training set')
-#plt.show()
 
 
 

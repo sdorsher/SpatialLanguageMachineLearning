@@ -20,6 +20,9 @@ def f5(x,a,b,c,d,g,h):
 def f3(x,a,b,c,d):
     return a*x**3+b*x**2+c*x+d
 
+def piecewise_f5_f3(x,x0,a,b,c,d,g,h,k,l,m,n):
+    return np.piecewise(x, [x<x0,x>=x0], [lambda x: f5(x,a,b,c,d,g,h), lambda x: f3(x,k,l,m,n)])
+
 def VowelToConsRatio(name):
     
     words = sum(c.isalpha() for c in name)
@@ -284,9 +287,12 @@ plt.show()
 
 xdat=np.arange(len(USAarrV))
 ydat=USAarrV[::-1]
-par=[1.,-1.,0.]
+#par=[1.,-1.,0.]
+#par=[50,1./40.,-1.,0.,0.3,1.
+#,0.,1.,0.3] 
+par=[1.,-1.,1.,-1.,.3,]
 p0=par
-par,pvar=curve_fit(powerlaw,xdat,ydat)
+par,pvar=curve_fit(f5,xdat,ydat)
 
 
 fig=plt.subplots()

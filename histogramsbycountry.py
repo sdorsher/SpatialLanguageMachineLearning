@@ -104,8 +104,8 @@ n_groups=len(Chinavowel)
 index=np.arange(n_groups)
 bar_width=0.35
 opacity = 0.8
-rects2 = plt.bar(index, np.asarray(Chinacons), bar_width, alpha=opacity, color='g', label='Consonants')
-rects1 = plt.bar(index, np.asarray(Chinavowel), bar_width, alpha=opacity, color='b', label='Vowels')
+rects2 = plt.bar(index, np.sort(np.asarray(Chinacons)), bar_width, alpha=opacity, color='g', label='Consonants')
+rects1 = plt.bar(index, np.sort(np.asarray(Chinavowel)), bar_width, alpha=opacity, color='b', label='Vowels')
 
 
 plt.xlabel('Airports in China')
@@ -120,8 +120,8 @@ n_groups=len(USvowel)
 index=np.arange(n_groups)
 bar_width=0.35
 opacity = 0.8
-rects2 = plt.bar(index, np.asarray(UScons), bar_width, alpha=opacity, color='g', label='Consonants')
-rects1 = plt.bar(index, np.asarray(USvowel), bar_width, alpha=opacity, color='b', label='Vowels')
+rects2 = plt.bar(index, np.sort(np.asarray(UScons)), bar_width, alpha=opacity, color='g', label='Consonants')
+rects1 = plt.bar(index, np.sort(np.asarray(USvowel)), bar_width, alpha=opacity, color='b', label='Vowels')
 
 
 plt.xlabel('Airports in the USA')
@@ -135,8 +135,8 @@ n_groups=len(Mexicovowel)
 index=np.arange(n_groups)
 bar_width=0.35
 opacity = 0.8
-rects2 = plt.bar(index, np.asarray(Mexicocons), bar_width, alpha=opacity, color='g', label='Consonants')
-rects1 = plt.bar(index, np.asarray(Mexicovowel), bar_width, alpha=opacity, color='b', label='Vowels')
+rects2 = plt.bar(index, np.sort(np.asarray(Mexicocons)), bar_width, alpha=opacity, color='g', label='Consonants')
+rects1 = plt.bar(index, np.sort(np.asarray(Mexicovowel)), bar_width, alpha=opacity, color='b', label='Vowels')
 
 
 plt.xlabel('Airports in Mexico')
@@ -152,8 +152,8 @@ n_groups=len(Germanyvowel)
 index=np.arange(n_groups)
 bar_width=0.35
 opacity = 0.8
-rects2 = plt.bar(index, np.asarray(Germanycons), bar_width, alpha=opacity, color='g', label='Consonants')
-rects1 = plt.bar(index, np.asarray(Germanyvowel), bar_width, alpha=opacity, color='b', label='Vowels')
+rects2 = plt.bar(index, np.sort(np.asarray(Germanycons)), bar_width, alpha=opacity, color='g', label='Consonants')
+rects1 = plt.bar(index, np.sort(np.asarray(Germanyvowel)), bar_width, alpha=opacity, color='b', label='Vowels')
 
 
 plt.xlabel('Airports in Germany')

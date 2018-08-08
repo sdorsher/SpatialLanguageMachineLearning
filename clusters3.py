@@ -61,28 +61,30 @@ for line in file:
     line=re.split(',',line);
     thisratioV, thisratioS, thisratioO=VowelToConsRatio(line[1]);
     ratio.append([thisratioV,thisratioS,thisratioO])
-    coords.append([float(line[6]),float(line[7])])
-    alldat.append([thisratioV,thisratioS,thisratioO,float(line[6]),float(line[7])])
+    isfloat=re.compile('[0-9]+\.[0-9]+')
+    if isfloat.search(line[6]) and isfloat.search(line[7]):
+        coords.append([float(line[6]),float(line[7])])
+        alldat.append([thisratioV,thisratioS,thisratioO,float(line[6]),float(line[7])])
 
 ratioarray=np.asarray(ratio)
 coordsarray=np.asarray(coords)
 alldatarray=np.asarray(alldat)
         
-print ratioarray[1:3]
-print alldatarray[1:3]
+print(ratioarray[1:3])
+print(alldatarray[1:3])
 
 scaler = StandardScaler()
 scaler.fit(alldatarray)
 StandardScaler(copy=True, with_mean=True, with_std=True)
 trainingdata=scaler.transform(alldatarray)
 
-km=KMeans(n_clusters=15,init='random',n_init=10,max_iter=300,tol=1e-04,random_state=0)
+km=KMeans(n_clusters=7,init='random',n_init=10,max_iter=300,tol=1e-04,random_state=0)
 y_km=km.fit_predict(trainingdata)
 
 
 
 
-print y_km
+print(y_km)
 
 
 
